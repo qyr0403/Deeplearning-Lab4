@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument("--optim", default="SGD", type=str)
     parser.add_argument("--hidden_sz", default=200, type=int)
     parser.add_argument("--output_sz", default=10, type=int)
-
+    parser.add_argument("--embedding_name", default="weibo", type=str)
     
     #seed_list=[13,21,87,100,42]
     args = parser.parse_args()
@@ -106,7 +106,7 @@ if __name__ == '__main__':
             word2id=word2id,datapath=args.datapath,mode="test"
         )
     
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=24,collate_fn=train_dataset.collate)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=10,collate_fn=train_dataset.collate)
     dev_loaders= DataLoader(dev_dataset, batch_size=256, shuffle=False, num_workers=10,collate_fn=dev_dataset.collate) 
     test_loaders= DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=10,collate_fn=test_dataset.collate) 
     # load model to gpu
@@ -126,6 +126,7 @@ if __name__ == '__main__':
     scheduler=get_linear_schedule_with_warmup(
     optimizer=optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=args.epochs*len(train_loader)
     )
+    best_acc=0.0
     for epoch in range(args.epochs):
         model.train()
         for class_id,sentence_ids in tqdm(train_loader,desc="Training Epoch{}".format(epoch)):
@@ -142,6 +143,11 @@ if __name__ == '__main__':
             tb.add_scalar("loss",loss.item(),global_training_steps)
         acc=dev(dev_loaders,model)
         print("acc:",acc)
+        if acc>best_acc:
+            best_acc=acc
+            st=model.state_dict(
+            )
+            torch.save(st,os.path.join(args.checkpoint_save_folder,"best_epoch{}_lr{}_embedding{}.bin".format(args.epochs,args.lr,args.embedding_name)))
             #_, pred = torch.max(logits, dim=1)  
             #num_correct += (pred == label).sum().item()  
 
@@ -158,3 +164,13 @@ if __name__ == '__main__':
         #    torch.save(model.state_dict(), '{}/{}_epoch{}_bz{}_lr{}_optim{}_aug{}_best.pth'.format(
         #        args.checkpoint_save_folder,args.model,args.epochs,args.batch_size,args.lr,args.optim,args.pre_process
         #    ))
+    if args.epochs ==0:
+        model.load_state_dict(
+            torch.load(
+                os.path.join(args.checkpoint_save_folder,"best_epoch{}_lr{}_embedding{}.bin".format(args.epochs,args.lr,args.embedding_name))
+            )
+        )
+        test_acc=dev(test_loaders,model)
+        print(test_acc)
+
+    
