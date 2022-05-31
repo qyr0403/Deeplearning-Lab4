@@ -105,7 +105,7 @@ if __name__ == '__main__':
     test_dataset=Shopping(
             word2id=word2id,datapath=args.datapath,mode="test"
         )
-    
+
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=10,collate_fn=train_dataset.collate)
     dev_loaders= DataLoader(dev_dataset, batch_size=256, shuffle=False, num_workers=10,collate_fn=dev_dataset.collate) 
     test_loaders= DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=10,collate_fn=test_dataset.collate) 
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     if args.epochs ==0:
         model.load_state_dict(
             torch.load(
-                os.path.join(args.checkpoint_save_folder,"best_epoch{}_lr{}_embedding{}.bin".format(args.epochs,args.lr,args.embedding_name))
+                args.trained_model_name_or_path
             )
         )
         test_acc=dev(test_loaders,model)
