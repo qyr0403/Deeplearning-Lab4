@@ -3,7 +3,7 @@ import math
 import torch
 import torch.nn as nn
 
-class RnnDecoderBlock(nn.Module):
+class DecoderBlock(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
         self.input_size = input_sz

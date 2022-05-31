@@ -1,16 +1,16 @@
 
-import math
+
 import torch
 import torch.nn as nn
-from RnnEncoderBlock import RnnEncoderBlock
-class RnnEncoder(nn.Module):
+from src.models.RnnEncoderBlock import EncoderBlock
+class Encoder(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
         self.input_size = input_sz
         self.hidden_size = hidden_sz
         self.EncoderLayer=nn.Sequential(
-            RnnEncoderBlock(input_sz,hidden_sz),
-            RnnEncoderBlock(input_sz,hidden_sz)
+            EncoderBlock(input_sz,hidden_sz),
+            EncoderBlock(hidden_sz,hidden_sz)
         )
 
 
