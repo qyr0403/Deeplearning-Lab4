@@ -45,7 +45,12 @@ class LstmBlock(nn.Module):
             assumes x.shape represents (batch_size, sequence_size, input_size)
             """
             x=input['hidden_seq']
-            h_t, c_t =input['h_t'],input['c_t']
+            #h_t, c_t =input['h_t'],input['c_t']
+            h_t,c_t=(
+                torch.randn_like(input['h_t']),
+                torch.randn_like(input['c_t'])
+            )
+            h_t,c_t=h_t.to(x.device),c_t.to(x.device)
             _, seq_sz, _ = x.size()
             hidden_seq = []
             

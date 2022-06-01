@@ -14,7 +14,7 @@ class ShoppingLSTM(nn.Module):
         self.embedding_layer=WordEmbedding(embedding)
         self.lstm_layer=nn.Sequential(
             LstmBlock(self.input_size,hidden_sz),
-            *[LstmBlock(hidden_sz,hidden_sz)]*11
+            *[LstmBlock(hidden_sz,hidden_sz)]*1
         )
         self.fc_layer=nn.Linear(hidden_sz,output_sz)
 
